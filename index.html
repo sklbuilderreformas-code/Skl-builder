@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SKL Builder — Reformas de calidad en Mallorca</title>
+  <meta name="description" content="Especialistas en reformas integrales en Mallorca. Pladur, embaldosado, electricidad y más. Más de 50 proyectos completados en las Islas Baleares." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FAFAFA;
+      --bg-alt: #F5F5F5;
+      --dark: #1a1a1a;
+      --green: #2D5A3D;
+      --green-light: #3a7350;
+      --green-pale: rgba(45,90,61,0.08);
+      --green-border: rgba(45,90,61,0.15);
+      --text: #111111;
+      --text-mid: #444444;
+      --text-muted: #777777;
+      --border: #E8E8E8;
+      --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.1);
+      --font: 'Inter', sans-serif;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Page Loader ── */
+    .page-loader {
+      position: fixed; inset: 0;
+      background: #fff; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .page-loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-logo {
+      font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text);
+      animation: fadeInUp 0.6s ease forwards;
+    }
+    .loader-logo span { color: var(--green); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── Reveal ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ══════════════════════ NAV ══════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 0 5%; height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250,250,250,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    nav.scrolled {
+      border-bottom-color: var(--border);
+      box-shadow: 0 1px 20px rgba(0,0,0,0.06);
+    }
+    .nav-logo {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em;
+      text-decoration: none; color: var(--text);
+      display: flex; align-items: center; gap: 1px; flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--green); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: 0.875rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--green); color: #fff !important;
+      padding: 0.6rem 1.3rem; border-radius: 8px;
+      font-weight: 600; font-size: 0.85rem !important;
+      text-decoration: none; white-space: nowrap;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-cta:hover {
+      background: var(--green-light) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(45,90,61,0.25) !important;
+    }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 5px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed; inset: 72px 0 0 0; z-index: 999;
+      background: rgba(250,250,250,0.98); backdrop-filter: blur(20px);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 2.5rem; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .mobile-menu.open { opacity: 1; }
+    .mobile-menu a {
+      color: var(--text); text-decoration: none;
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--green); }
+    .mobile-menu .mobile-cta {
+      background: var(--green); color: #fff;
+      padding: 0.9rem 2rem; border-radius: 10px;
+      font-size: 1rem; font-weight: 700;
+    }
+
+    /* ══════════════════════ SHARED ══════════════════════ */
+    section { padding: 110px 5%; }
+    .section-inner { max-width: 1300px; margin: 0 auto; }
+    .pill {
+      display: inline-flex; align-items: center;
+      background: var(--green-pale); border: 1px solid var(--green-border);
+      border-radius: 100px; padding: 5px 14px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--green); text-transform: uppercase; margin-bottom: 1.4rem;
+    }
+    .section-headline {
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .section-headline .accent { color: var(--green); }
+    .underline-green {
+      text-decoration: underline;
+      text-decoration-color: var(--green);
+      text-underline-offset: 5px;
+    }
+
+    .btn-primary {
+      background: var(--green); color: #fff;
+      padding: 0.9rem 1.9rem; border-radius: 9px;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor: pointer; border: none; font-family: var(--font);
+    }
+    .btn-primary:hover {
+      background: var(--green-light); transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(45,90,61,0.2);
+    }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      padding: 0.9rem 1.9rem; border-radius: 9px;
+      font-weight: 600; font-size: 0.95rem; text-decoration: none;
+      border: 1.5px solid var(--border);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      font-family: var(--font);
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-mid); background: rgba(0,0,0,0.02);
+      transform: translateY(-2px);
+    }
+
+    /* ══════════════════════ HERO ══════════════════════ */
+    #inicio {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 100px 5% 80px;
+    }
+    .hero-inner {
+      width: 100%; max-width: 1300px; margin: 0 auto;
+      display: grid; grid-template-columns: 55% 45%;
+      gap: 5rem; align-items: center;
+    }
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-pale); border: 1px solid var(--green-border);
+      border-radius: 100px; padding: 6px 14px;
+      font-size: 0.73rem; font-weight: 700; letter-spacing: 0.09em;
+      color: var(--green); text-transform: uppercase; margin-bottom: 1.6rem;
+    }
+    .hero-pill::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--green); border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    .hero-headline {
+      font-size: clamp(2.6rem, 5vw, 4.5rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -0.04em; color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+    .hero-headline .accent { color: var(--green); }
+
+    .hero-subtext {
+      color: var(--text-mid); font-size: clamp(1rem, 1.4vw, 1.1rem);
+      line-height: 1.75; margin-bottom: 2.5rem; max-width: 500px;
+    }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+    .hero-stats { display: flex; gap: 0; flex-wrap: wrap; }
+    .stat-item { padding-right: 2rem; }
+    .stat-item + .stat-item {
+      padding-left: 2rem; padding-right: 2rem;
+      border-left: 1px solid var(--border);
+    }
+    .stat-number {
+      font-size: 1.8rem; font-weight: 900; color: var(--text);
+      letter-spacing: -0.04em; line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+
+    .hero-image-wrap { position: relative; }
+    .hero-img {
+      width: 100%; border-radius: 20px;
+      display: block; object-fit: cover; height: 580px;
+      box-shadow: var(--shadow-lg);
+    }
+    .hero-badge-bottom {
+      position: absolute; bottom: -20px; left: 28px;
+      background: #fff; border-radius: 12px;
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: var(--shadow-md);
+    }
+    .badge-check {
+      width: 36px; height: 36px; background: var(--green-pale);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      color: var(--green); font-size: 1rem; font-weight: 700; flex-shrink: 0;
+    }
+    .badge-text { font-size: 0.82rem; font-weight: 600; line-height: 1.4; color: var(--text); }
+    .badge-text small { color: var(--text-muted); font-weight: 400; display: block; }
+    .hero-badge-top {
+      position: absolute; top: 24px; right: -16px;
+      background: #fff; border-radius: 12px;
+      padding: 12px 18px;
+      box-shadow: var(--shadow-md);
+    }
+    .badge-stars { color: #F59E0B; font-size: 0.85rem; letter-spacing: 2px; }
+    .badge-rating { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ══════════════════════ ABOUT ══════════════════════ */
+    #sobre-nosotros { background: #fff; }
+    #sobre-nosotros .section-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: center;
+    }
+    .about-text p {
+      color: var(--text-mid); line-height: 1.8;
+      margin: 1.5rem 0 2.2rem; font-size: 1.02rem;
+    }
+    .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .value-item {
+      padding: 2.2rem 2rem 1.8rem;
+      border-bottom: 2px solid var(--green);
+      position: relative; overflow: hidden;
+    }
+    .value-item:nth-child(1), .value-item:nth-child(2) { border-top: 1px solid var(--border); }
+    .value-item:nth-child(odd) { border-right: 1px solid var(--border); }
+    .value-num {
+      position: absolute; top: -0.2rem; right: 0.8rem;
+      font-size: 5rem; font-weight: 900; color: rgba(0,0,0,0.04);
+      line-height: 1; letter-spacing: -0.04em; pointer-events: none;
+      user-select: none;
+    }
+    .value-item h4 {
+      font-size: 1rem; font-weight: 800; color: var(--text);
+      margin-bottom: 0.5rem; letter-spacing: -0.02em;
+    }
+    .value-item p { font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+    /* ══════════════════════ SERVICES ══════════════════════ */
+    #servicios { background: var(--bg-alt); }
+    .services-header { text-align: center; margin-bottom: 4rem; }
+    .services-header p { color: var(--text-mid); margin-top: 1rem; font-size: 1.05rem; }
+    .services-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: start;
+    }
+    .services-img-wrap {
+      position: sticky; top: 100px;
+      border-radius: 18px; overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .services-img {
+      width: 100%; object-fit: cover; height: 500px;
+      display: block; transition: opacity 0.35s ease;
+    }
+
+    .accordion-list { display: flex; flex-direction: column; }
+    .accordion-item { border-bottom: 1px solid var(--border); }
+    .accordion-item:first-child { border-top: 1px solid var(--border); }
+    .accordion-trigger {
+      width: 100%; background: none; border: none; cursor: pointer;
+      padding: 1.4rem 0; display: flex; align-items: center; justify-content: space-between;
+      text-align: left; color: var(--text); transition: color 0.2s;
+      font-family: var(--font);
+    }
+    .accordion-trigger:hover { color: var(--green); }
+    .accordion-trigger.active { color: var(--green); }
+    .accordion-title { font-size: 1.05rem; font-weight: 600; }
+    .accordion-icon {
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 1rem; font-weight: 400;
+      transition: transform 0.3s ease, border-color 0.2s, background 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .accordion-trigger.active .accordion-icon {
+      transform: rotate(45deg);
+      border-color: var(--green); color: var(--green);
+      background: var(--green-pale);
+    }
+    .accordion-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .accordion-body.open { max-height: 200px; }
+    .accordion-body p {
+      color: var(--text-mid); font-size: 0.9rem; line-height: 1.75;
+      padding-bottom: 1.5rem;
+    }
+
+    /* ══════════════════════ PROJECTS ══════════════════════ */
+    #proyectos { background: #fff; }
+    .projects-header { text-align: center; margin-bottom: 3.5rem; }
+    .masonry { columns: 3; column-gap: 1.2rem; }
+    .masonry-item {
+      break-inside: avoid; margin-bottom: 1.2rem;
+      position: relative; border-radius: 12px; overflow: hidden;
+      cursor: pointer; background: #fff;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.35s ease, transform 0.35s ease;
+    }
+    .masonry-item:nth-child(2) { margin-top: 2.5rem; }
+    .masonry-item:nth-child(5) { margin-top: -1.5rem; }
+    .masonry-item:hover { box-shadow: var(--shadow-lg); transform: scale(1.02); }
+    .masonry-item img {
+      width: 100%; display: block; object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .masonry-item:hover img { transform: scale(1.04); }
+    .masonry-item:nth-child(1) img { height: 280px; }
+    .masonry-item:nth-child(2) img { height: 360px; }
+    .masonry-item:nth-child(3) img { height: 320px; }
+    .masonry-item:nth-child(4) img { height: 340px; }
+    .masonry-item:nth-child(5) img { height: 280px; }
+    .masonry-item:nth-child(6) img { height: 300px; }
+    .masonry-label {
+      padding: 0.9rem 1rem 1rem;
+      background: #fff;
+    }
+    .masonry-label h4 { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .masonry-label span { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; display: block; }
+    .projects-footer { text-align: center; margin-top: 3rem; }
+
+    /* ══════════════════════ STATS ══════════════════════ */
+    #estadisticas {
+      background: var(--green); padding: 90px 5%;
+    }
+    .stats-grid {
+      max-width: 1000px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4,1fr);
+      text-align: center; gap: 2rem;
+    }
+    .stats-divider {
+      width: 1px; background: rgba(255,255,255,0.15);
+      margin: auto;
+    }
+    .big-stat-number {
+      font-size: clamp(3rem,5vw,4.5rem); font-weight: 900;
+      color: #fff; letter-spacing: -0.04em; line-height: 1;
+    }
+    .big-stat-label {
+      color: rgba(255,255,255,0.75); font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-top: 8px;
+    }
+    .big-stat-desc { color: rgba(255,255,255,0.5); font-size: 0.78rem; margin-top: 4px; }
+
+    /* ══════════════════════ PROCESS ══════════════════════ */
+    #proceso { background: var(--bg-alt); }
+    .process-header { text-align: center; margin-bottom: 5rem; }
+    .process-header p { color: var(--text-mid); margin-top: 1rem; }
+    .process-steps {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 0;
+      position: relative;
+    }
+    .process-steps::before {
+      content: '';
+      position: absolute; top: 27px;
+      left: calc(12.5% + 13px); right: calc(12.5% + 13px);
+      height: 1px; background: var(--green-border);
+    }
+    .process-step { padding: 0 1.5rem; text-align: center; }
+    .step-circle {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 0.78rem; font-weight: 800; color: var(--green);
+      position: relative; z-index: 1;
+      box-shadow: 0 0 0 5px var(--bg-alt);
+    }
+    .process-step h3 { font-size: 1.02rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+    .process-step p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.65; }
+
+    /* ══════════════════════ TESTIMONIALS ══════════════════════ */
+    #testimonios { background: #fff; }
+    .testimonials-header { text-align: center; margin-bottom: 3.5rem; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .testimonial-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .testimonial-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+    .t-stars { color: #F59E0B; font-size: 0.85rem; margin-bottom: 1rem; letter-spacing: 2px; }
+    .t-text {
+      color: var(--text-mid); font-size: 0.9rem; line-height: 1.8;
+      margin-bottom: 1.5rem; font-style: italic;
+    }
+    .t-author { font-weight: 700; font-size: 0.875rem; color: var(--text); }
+    .t-location { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ══════════════════════ CONTACT ══════════════════════ */
+    #contacto {
+      background: var(--bg-alt);
+      border-top: 3px solid var(--green);
+    }
+    .contact-header { text-align: center; margin-bottom: 4rem; }
+    .contact-header p { color: var(--text-mid); margin-top: 1rem; font-size: 1rem; }
+    .contact-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; }
+    .contact-info { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .contact-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .contact-icon {
+      width: 42px; height: 42px; background: var(--green-pale);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .contact-card-label { font-size: 0.73rem; color: var(--text-muted); margin-bottom: 2px; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+    .contact-card-value { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .contact-card-value a { color: var(--text); text-decoration: none; transition: color 0.2s; }
+    .contact-card-value a:hover { color: var(--green); }
+
+    /* Form */
+    .form-wrap {
+      background: #fff; border-radius: 18px;
+      padding: 2.5rem; box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: var(--text); margin-bottom: 7px; letter-spacing: 0.02em;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; background: var(--bg-alt); border: 1.5px solid var(--border);
+      border-radius: 9px; padding: 0.8rem 1rem; color: var(--text);
+      font-family: var(--font); font-size: 0.9rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none; appearance: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(45,90,61,0.1);
+      background: #fff;
+    }
+    .form-group select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23777' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 36px;
+      background-color: var(--bg-alt);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-submit { width: 100%; padding: 1rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em; }
+    .form-error { color: #DC2626; font-size: 0.78rem; margin-top: 4px; display: none; }
+    .field-error .form-error { display: block; }
+    .field-error input, .field-error select, .field-error textarea { border-color: #DC2626 !important; }
+
+    .success-message {
+      display: none; background: var(--green-pale);
+      border: 1px solid var(--green-border); border-radius: 12px;
+      padding: 2.5rem; text-align: center;
+    }
+    .success-message.show { display: block; }
+    .success-icon {
+      width: 56px; height: 56px; background: var(--green);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.2rem; color: #fff; font-size: 1.4rem;
+    }
+    .success-message h3 { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; }
+    .success-message p { color: var(--text-mid); font-size: 0.9rem; }
+
+    /* ══════════════════════ FOOTER ══════════════════════ */
+    footer {
+      background: var(--dark);
+      padding: 4rem 5% 2rem;
+    }
+    .footer-inner { max-width: 1300px; margin: 0 auto; }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding-bottom: 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+      gap: 2rem; flex-wrap: wrap;
+    }
+    .footer-brand p { color: rgba(255,255,255,0.45); font-size: 0.85rem; margin-top: 8px; line-height: 1.6; }
+    .footer-logo { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
+    .footer-logo span { color: var(--green); }
+    .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; align-items: center; }
+    .footer-links a {
+      color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-copy { color: rgba(255,255,255,0.35); font-size: 0.8rem; }
+    .footer-dev { color: rgba(255,255,255,0.35); font-size: 0.8rem; }
+    .footer-dev a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .footer-dev a:hover { color: #fff; }
+
+    /* ══════════════════════ RESPONSIVE ══════════════════════ */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 3.5rem; }
+      .hero-image-wrap { order: -1; }
+      .hero-img { height: 440px; }
+      .hero-badge-top { right: 12px; }
+      #sobre-nosotros .section-inner { grid-template-columns: 1fr; gap: 3.5rem; }
+      .services-layout { grid-template-columns: 1fr; }
+      .services-img-wrap { position: static; }
+      .services-img { height: 340px; }
+      .process-steps { grid-template-columns: 1fr 1fr; gap: 3rem; }
+      .process-steps::before { display: none; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); gap: 3rem; }
+      .testimonials-grid { grid-template-columns: 1fr 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      section { padding: 75px 5%; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero-headline { font-size: clamp(2.1rem, 8vw, 3rem); }
+      .hero-stats { gap: 0; }
+      .stat-item + .stat-item { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .masonry { columns: 2; }
+      .masonry-item:nth-child(2), .masonry-item:nth-child(5) { margin-top: 0; }
+      .process-steps { grid-template-columns: 1fr; gap: 2.5rem; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .values-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-top { flex-direction: column; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .masonry { columns: 1; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .hero-buttons { flex-direction: column; }
+      .hero-buttons a { text-align: center; justify-content: center; }
+      .form-wrap { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PAGE LOADER -->
+<div class="page-loader" id="pageLoader">
+  <div class="loader-logo">SKL<span>Builder</span></div>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#inicio" onclick="closeMobile()">Inicio</a>
+  <a href="#servicios" onclick="closeMobile()">Servicios</a>
+  <a href="#proyectos" onclick="closeMobile()">Proyectos</a>
+  <a href="#proceso" onclick="closeMobile()">Proceso</a>
+  <a href="#contacto" onclick="closeMobile()">Contacto</a>
+  <a href="#contacto" class="mobile-cta" onclick="closeMobile()">Solicitar presupuesto →</a>
+</div>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <a href="#inicio" class="nav-logo">SKL<span>Builder</span></a>
+  <ul class="nav-links">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Solicitar presupuesto →</a>
+  <button class="hamburger" id="hamburger" aria-label="Menú" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section id="inicio">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-pill reveal" style="transition-delay:0.1s">DISPONIBLES EN MALLORCA</div>
+      <h1 class="hero-headline reveal" style="transition-delay:0.2s">
+        Reformamos tu hogar<br>con precisión y<br>
+        <span class="accent">calidad artesanal</span>
+      </h1>
+      <p class="hero-subtext reveal" style="transition-delay:0.3s">
+        Especialistas en reformas integrales en Mallorca. Pladur, embaldosado, electricidad y mucho más. Más de 50 proyectos completados en las Islas Baleares.
+      </p>
+      <div class="hero-buttons reveal" style="transition-delay:0.4s">
+        <a href="#contacto" class="btn-primary">Pide tu presupuesto gratis →</a>
+        <a href="#proyectos" class="btn-secondary">Ver nuestros proyectos</a>
+      </div>
+      <div class="hero-stats reveal" style="transition-delay:0.5s">
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Proyectos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10+</div>
+          <div class="stat-label">Años</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Satisfacción</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">15 días</div>
+          <div class="stat-label">Plazo medio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-image-wrap reveal-right" style="transition-delay:0.3s">
+      <img
+        src="https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=800"
+        alt="Reforma de calidad en Mallorca"
+        class="hero-img"
+        loading="eager"
+      />
+      <div class="hero-badge-bottom">
+        <div class="badge-check">✓</div>
+        <div class="badge-text">
+          Presupuesto gratuito
+          <small>Respuesta en menos de 24h</small>
+        </div>
+      </div>
+      <div class="hero-badge-top">
+        <div class="badge-stars">★★★★★</div>
+        <div class="badge-rating">5.0 · Google Reviews</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<section id="sobre-nosotros">
+  <div class="section-inner">
+    <div class="about-text reveal-left">
+      <span class="pill">QUIÉNES SOMOS</span>
+      <h2 class="section-headline">
+        Empresa familiar<br>con alma de <span class="underline-green">artesanos</span>
+      </h2>
+      <p>
+        Somos una empresa familiar con más de 10 años de experiencia en reformas en Mallorca. Cada proyecto lo tratamos como si fuera nuestra propia casa, con el mismo cuidado, dedicación y exigencia que aplicamos desde el primer día.
+      </p>
+      <a href="#contacto" class="btn-primary">Conoce nuestra historia →</a>
+    </div>
+    <div class="values-grid reveal-right">
+      <div class="value-item">
+        <span class="value-num">01</span>
+        <h4>Trabajo Garantizado</h4>
+        <p>Calidad certificada en cada proyecto que entregamos</p>
+      </div>
+      <div class="value-item">
+        <span class="value-num">02</span>
+        <h4>Presupuesto Transparente</h4>
+        <p>Sin sorpresas. El precio que acordamos es el precio final</p>
+      </div>
+      <div class="value-item">
+        <span class="value-num">03</span>
+        <h4>Equipo Propio</h4>
+        <p>Sin subcontratas. Nuestro equipo de principio a fin</p>
+      </div>
+      <div class="value-item">
+        <span class="value-num">04</span>
+        <h4>Puntualidad</h4>
+        <p>Cumplimos los plazos acordados. Siempre</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SERVICES ═══════════ -->
+<section id="servicios">
+  <div class="section-inner">
+    <div class="services-header reveal">
+      <span class="pill">NUESTROS SERVICIOS</span>
+      <h2 class="section-headline">Todo lo que necesita<br>tu reforma</h2>
+      <p>Desde la primera visita hasta la entrega final, nos encargamos de todo</p>
+    </div>
+    <div class="services-layout">
+      <div class="services-img-wrap reveal-left">
+        <img
+          id="serviceImg"
+          src="https://i.imgur.com/Oepx0FN.jpeg"
+          alt="Servicio de reforma"
+          class="services-img"
+          loading="lazy"
+        />
+      </div>
+      <div class="accordion-list reveal-right">
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/Oepx0FN.jpeg')">
+            <span class="accordion-title">Reformas Integrales</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Renovación completa de tu piso o local, desde el suelo hasta el techo. Coordinamos todos los gremios para que no tengas que preocuparte de nada.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/TElxV1f.jpeg')">
+            <span class="accordion-title">Pladur y Tabiquería</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Distribución de espacios, falsos techos y paredes de pladur con acabado perfecto. Aislamiento acústico y térmico de primera calidad.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/8GCZg4a.jpeg')">
+            <span class="accordion-title">Embaldosado y Solados</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Instalación de todo tipo de pavimentos y revestimientos con precisión milimétrica. Porcelánico, microcemento, madera y más.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/MWe6S2S.jpeg')">
+            <span class="accordion-title">Instalaciones Eléctricas</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Instalaciones nuevas, reformas eléctricas y domótica para el hogar moderno. Certificados y con todas las garantías legales.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/UamVsKb.jpeg')">
+            <span class="accordion-title">Reformas de Baños</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Transforma tu baño con materiales de calidad y diseño contemporáneo. Mamparas, sanitarios, grifería y revestimientos a medida.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger" onclick="toggleAccordion(this,'https://i.imgur.com/rkMdmgt.jpeg')">
+            <span class="accordion-title">Techos y Falsos Techos</span>
+            <span class="accordion-icon">+</span>
+          </button>
+          <div class="accordion-body">
+            <p>Techos de pladur, vigas vistas, focos empotrados y acabados premium. Diseño funcional y estético para cualquier espacio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROJECTS ═══════════ -->
+<section id="proyectos">
+  <div class="section-inner">
+    <div class="projects-header reveal">
+      <span class="pill">NUESTROS PROYECTOS</span>
+      <h2 class="section-headline">Proyectos que<br>hablan por sí solos</h2>
+    </div>
+    <div class="masonry reveal">
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/Oepx0FN.jpeg" alt="Reforma Integral Palma" loading="lazy" />
+        <div class="masonry-label"><h4>Reforma Integral</h4><span>Palma de Mallorca</span></div>
+      </div>
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/5ZV9aqf.jpeg" alt="Cocina Premium Palma" loading="lazy" />
+        <div class="masonry-label"><h4>Cocina Premium</h4><span>Palma de Mallorca</span></div>
+      </div>
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/f3j89nt.jpeg" alt="Salón Moderno Palma" loading="lazy" />
+        <div class="masonry-label"><h4>Salón Moderno</h4><span>Palma de Mallorca</span></div>
+      </div>
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/QDVZ9Bf.jpeg" alt="Pladur y Techos Inca" loading="lazy" />
+        <div class="masonry-label"><h4>Pladur y Techos</h4><span>Inca</span></div>
+      </div>
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/UamVsKb.jpeg" alt="Baño Premium Calvià" loading="lazy" />
+        <div class="masonry-label"><h4>Baño Premium</h4><span>Calvià</span></div>
+      </div>
+      <div class="masonry-item">
+        <img src="https://i.imgur.com/8GCZg4a.jpeg" alt="Embaldosado Palma" loading="lazy" />
+        <div class="masonry-label"><h4>Embaldosado</h4><span>Palma de Mallorca</span></div>
+      </div>
+    </div>
+    <div class="projects-footer reveal">
+      <a href="#contacto" class="btn-primary">Ver todos los proyectos →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ STATS ═══════════ -->
+<section id="estadisticas">
+  <div class="stats-grid">
+    <div class="reveal" style="transition-delay:0.1s">
+      <div class="big-stat-number">50+</div>
+      <div class="big-stat-label">Proyectos completados</div>
+      <div class="big-stat-desc">En toda Mallorca</div>
+    </div>
+    <div class="reveal" style="transition-delay:0.2s">
+      <div class="big-stat-number">10+</div>
+      <div class="big-stat-label">Años de experiencia</div>
+      <div class="big-stat-desc">En reformas del hogar</div>
+    </div>
+    <div class="reveal" style="transition-delay:0.3s">
+      <div class="big-stat-number">100%</div>
+      <div class="big-stat-label">Clientes satisfechos</div>
+      <div class="big-stat-desc">Trabajo garantizado</div>
+    </div>
+    <div class="reveal" style="transition-delay:0.4s">
+      <div class="big-stat-number">15</div>
+      <div class="big-stat-label">Días plazo medio</div>
+      <div class="big-stat-desc">Entrega puntual</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROCESS ═══════════ -->
+<section id="proceso">
+  <div class="section-inner">
+    <div class="process-header reveal">
+      <span class="pill">CÓMO TRABAJAMOS</span>
+      <h2 class="section-headline">Simple, transparente<br>y sin sorpresas</h2>
+      <p>Cuatro pasos que convierten tu idea en realidad</p>
+    </div>
+    <div class="process-steps">
+      <div class="process-step reveal" style="transition-delay:0.1s">
+        <div class="step-circle">01</div>
+        <h3>Contacto</h3>
+        <p>Nos llamas o escribes y concertamos una visita sin compromiso</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay:0.2s">
+        <div class="step-circle">02</div>
+        <h3>Presupuesto</h3>
+        <p>Visitamos tu piso o local, evaluamos el trabajo y entregamos presupuesto detallado en 24 horas. Sin compromiso.</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay:0.3s">
+        <div class="step-circle">03</div>
+        <h3>Reforma</h3>
+        <p>Ejecutamos con nuestro equipo propio, puntual y limpio. Sin subcontratas</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay:0.4s">
+        <div class="step-circle">04</div>
+        <h3>Entrega</h3>
+        <p>Revisamos contigo el resultado final y garantizamos cada detalle del trabajo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TESTIMONIALS ═══════════ -->
+<section id="testimonios">
+  <div class="section-inner">
+    <div class="testimonials-header reveal">
+      <span class="pill">TESTIMONIOS</span>
+      <h2 class="section-headline">Lo que dicen<br>nuestros clientes</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal" style="transition-delay:0.1s">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-text">"Reforma integral del piso completo. Trabajo impecable, muy profesionales y cumplieron el plazo. 100% recomendable. Los mejores reformistas de Mallorca sin duda."</p>
+        <div class="t-author">Juan M.</div>
+        <div class="t-location">Palma de Mallorca</div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.2s">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-text">"Reformaron nuestro baño y quedó espectacular. Presupuesto claro, sin sorpresas y muy buen precio. Equipo muy amable y trabajaron limpio en todo momento."</p>
+        <div class="t-author">Carmen L.</div>
+        <div class="t-location">Calvià</div>
+      </div>
+      <div class="testimonial-card reveal" style="transition-delay:0.3s">
+        <div class="t-stars">★★★★★</div>
+        <p class="t-text">"Instalación eléctrica completa en toda la casa. Rápidos, limpios y muy atentos a cada detalle. Los mejores de Mallorca sin ninguna duda. Repetiré seguro."</p>
+        <div class="t-author">Pedro R.</div>
+        <div class="t-location">Inca</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<section id="contacto">
+  <div class="section-inner">
+    <div class="contact-header reveal">
+      <span class="pill">CONTACTA CON NOSOTROS</span>
+      <h2 class="section-headline">¿Tienes un proyecto<br>en mente?</h2>
+      <p>Cuéntanos qué necesitas y te enviamos presupuesto gratuito en menos de 24 horas</p>
+    </div>
+    <div class="contact-layout">
+      <div class="contact-info reveal-left">
+        <div class="contact-card">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-card-label">Ubicación</div>
+            <div class="contact-card-value">Palma de Mallorca, Illes Balears</div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-card-label">Teléfono</div>
+            <div class="contact-card-value"><a href="tel:+34640751510">640 75 15 10</a></div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📧</div>
+          <div>
+            <div class="contact-card-label">Email</div>
+            <div class="contact-card-value"><a href="mailto:sklbuilder.reformas@gmail.com">sklbuilder.reformas@gmail.com</a></div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">💬</div>
+          <div>
+            <div class="contact-card-label">WhatsApp</div>
+            <div class="contact-card-value"><a href="https://wa.me/34640751510">Escríbenos por WhatsApp</a></div>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">🕐</div>
+          <div>
+            <div class="contact-card-label">Horario</div>
+            <div class="contact-card-value">Lun–Vie: 8:00 – 18:00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reveal-right">
+        <div class="form-wrap">
+          <form id="contactForm" action="https://formspree.io/f/sklbuilder" method="POST" novalidate>
+            <input type="hidden" name="_replyto" value="sklbuilder.reformas@gmail.com" />
+            <input type="hidden" name="_subject" value="Nuevo presupuesto SKL Builder" />
+            <div class="form-row">
+              <div class="form-group" id="fg-name">
+                <label for="name">Nombre completo</label>
+                <input type="text" id="name" name="name" placeholder="Tu nombre completo" />
+                <div class="form-error">Por favor, introduce tu nombre</div>
+              </div>
+              <div class="form-group" id="fg-phone">
+                <label for="phone">Teléfono</label>
+                <input type="tel" id="phone" name="phone" placeholder="+34 600 000 000" />
+                <div class="form-error">Por favor, introduce tu teléfono</div>
+              </div>
+            </div>
+            <div class="form-group" id="fg-email">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="tu@email.com" />
+              <div class="form-error">Por favor, introduce un email válido</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group" id="fg-tipo">
+                <label for="tipo">Tipo de reforma</label>
+                <select id="tipo" name="tipo">
+                  <option value="">Selecciona el tipo</option>
+                  <option value="integral">Reforma integral</option>
+                  <option value="bano">Baño</option>
+                  <option value="cocina">Cocina</option>
+                  <option value="pladur">Pladur</option>
+                  <option value="electricidad">Electricidad</option>
+                  <option value="otro">Otro</option>
+                </select>
+                <div class="form-error">Por favor, selecciona el tipo</div>
+              </div>
+              <div class="form-group" id="fg-cuando">
+                <label for="cuando">¿Cuándo quieres empezar?</label>
+                <select id="cuando" name="cuando">
+                  <option value="">Selecciona cuándo</option>
+                  <option value="urgente">Lo antes posible</option>
+                  <option value="1-3">En 1–3 meses</option>
+                  <option value="3-6">En 3–6 meses</option>
+                  <option value="info">Solo informarme</option>
+                </select>
+                <div class="form-error">Por favor, selecciona una opción</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="descripcion">Descripción breve</label>
+              <textarea id="descripcion" name="descripcion" placeholder="Cuéntanos brevemente qué necesitas..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary form-submit">SOLICITAR PRESUPUESTO GRATUITO →</button>
+          </form>
+          <div class="success-message" id="successMsg">
+            <div class="success-icon">✓</div>
+            <h3>¡Solicitud recibida!</h3>
+            <p>Nos pondremos en contacto contigo en menos de 24 horas con tu presupuesto personalizado.</p>
+            <a href="https://wa.me/34640751510?text=Hola,%20acabo%20de%20solicitar%20un%20presupuesto%20en%20vuestra%20web" target="_blank" rel="noopener" class="btn-primary" style="margin-top:1.2rem;justify-content:center;">Escríbenos por WhatsApp →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">SKL<span>Builder</span></div>
+        <p>Reformas de calidad en Mallorca<br>Tu hogar, nuestra pasión</p>
+      </div>
+      <div class="footer-links">
+        <a href="#servicios">Servicios</a>
+        <a href="#proyectos">Proyectos</a>
+        <a href="#contacto">Contacto</a>
+        <a href="#" onclick="return false;">Aviso Legal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 SKL Builder. Todos los derechos reservados.</div>
+      <div class="footer-dev">Desarrollado por <a href="#">Cesar Aaron · Desarrollador Web</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── PAGE LOADER ──
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('pageLoader').classList.add('hidden'), 700);
+  });
+
+  // ── NAV SCROLL ──
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+
+  // ── MOBILE MENU ──
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
+
+  function toggleMobile() {
+    menuOpen = !menuOpen;
+    hamburger.classList.toggle('open', menuOpen);
+    mobileMenu.style.display = menuOpen ? 'flex' : 'none';
+    requestAnimationFrame(() => mobileMenu.classList.toggle('open', menuOpen));
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+  }
+  function closeMobile() {
+    menuOpen = false;
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
+    document.body.style.overflow = '';
+  }
+
+  // ── SCROLL REVEAL ──
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // ── ACCORDION ──
+  function toggleAccordion(trigger, imgSrc) {
+    const body = trigger.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.accordion-body.open').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.accordion-trigger.active').forEach(t => t.classList.remove('active'));
+    if (!isOpen) {
+      body.classList.add('open');
+      trigger.classList.add('active');
+      const img = document.getElementById('serviceImg');
+      img.style.opacity = '0';
+      setTimeout(() => { img.src = imgSrc; img.style.opacity = '1'; }, 280);
+    }
+  }
+
+  // ── FORM VALIDATION + FORMSPREE SUBMIT ──
+  const form = document.getElementById('contactForm');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    let valid = true;
+    function validate(id, fn) {
+      const el = document.getElementById(id);
+      const fg = document.getElementById('fg-' + id);
+      if (!fg) return;
+      const ok = fn(el.value.trim());
+      fg.classList.toggle('field-error', !ok);
+      if (!ok) valid = false;
+    }
+    validate('name', v => v.length >= 2);
+    validate('phone', v => v.length >= 6);
+    validate('email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+    validate('tipo', v => v !== '');
+    validate('cuando', v => v !== '');
+    if (!valid) return;
+
+    const submitBtn = form.querySelector('.form-submit');
+    submitBtn.textContent = 'Enviando...';
+    submitBtn.disabled = true;
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('successMsg').classList.add('show');
+        window.scrollTo({ top: document.getElementById('contacto').offsetTop - 80, behavior: 'smooth' });
+      } else {
+        submitBtn.textContent = 'Error al enviar. Inténtalo de nuevo.';
+        submitBtn.disabled = false;
+      }
+    } catch {
+      submitBtn.textContent = 'Error de conexión. Inténtalo de nuevo.';
+      submitBtn.disabled = false;
+    }
+  });
+  document.querySelectorAll('#contactForm input, #contactForm select, #contactForm textarea').forEach(el => {
+    el.addEventListener('input', () => el.closest('.form-group')?.classList.remove('field-error'));
+  });
+</script>
+
+<!-- FLOATING WHATSAPP BUTTON -->
+<style>
+  .wa-float {
+    position: fixed; bottom: 28px; right: 28px; z-index: 2000;
+    width: 56px; height: 56px;
+    background: #25D366; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    text-decoration: none;
+    animation: waBounce 2.5s ease-in-out 2s 3;
+  }
+  .wa-float:hover { background: #1ebe5d; transform: scale(1.08); }
+  .wa-float svg { width: 30px; height: 30px; fill: #fff; }
+  @keyframes waBounce {
+    0%,100% { transform: translateY(0); }
+    40%      { transform: translateY(-10px); }
+    60%      { transform: translateY(-5px); }
+  }
+  .wa-tooltip {
+    position: absolute; right: 68px; top: 50%; transform: translateY(-50%);
+    background: #1a1a1a; color: #fff;
+    font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500;
+    padding: 6px 12px; border-radius: 7px; white-space: nowrap;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .wa-tooltip::after {
+    content: ''; position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+    border: 5px solid transparent; border-left-color: #1a1a1a;
+  }
+  .wa-float:hover .wa-tooltip { opacity: 1; }
+</style>
+
+<a class="wa-float" href="https://wa.me/34640751510" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="wa-tooltip">Escríbenos por WhatsApp</span>
+</a>
+</body>
+</html>
